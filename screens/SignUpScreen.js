@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, KeyboardAvoidingView } from 'react-native'
-import React, { createRef, useState } from 'react'
+import React, { useState } from 'react'
 import COLORS from '../consts/colors'
 import { StyleSheet } from 'react-native'
 import { Dimensions } from 'react-native'
@@ -9,10 +9,12 @@ import {initializeApp} from 'firebase/app'
 import { firebaseConfig } from '../firebase'
 import {createUserWithEmailAndPassword, getAuth} from 'firebase/auth'
 import { Alert } from 'react-native'
+import { useNavigation } from '@react-navigation/core'
 
 const {width, height} = Dimensions.get('window')
 
 const SignUpScreen = ({navigation}) => {
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [username, setUsername] = useState('')
@@ -45,7 +47,7 @@ const SignUpScreen = ({navigation}) => {
         }}>
       <KeyboardAvoidingView enabled> 
       <View style={{height: '100%'}}>
-        <IconButton icon='arrow-left' size={35} iconColor={COLORS.darkblue} style={{marginLeft: 15, marginTop: 35}}/>
+        <IconButton icon='arrow-left' onPress={() => navigation.goBack(null)} size={35} iconColor={COLORS.darkblue} style={{marginLeft: 15, marginTop: 35}}/>
         
         <View style={{flexDirection: 'row', marginLeft: 20}}>
           <TouchableOpacity
@@ -113,7 +115,7 @@ const SignUpScreen = ({navigation}) => {
           secureTextEntry
           />
         </View>
-        <View style={{height: 65, width: '90%', alignSelf: 'center', top: height * 0.30}}>
+        <View style={{height: 65, width: '90%', alignSelf: 'center', top: height * 0.25}}>
             <TouchableOpacity
             style={styles.btn_SignUp}
             onPress={() => handleSignUp()}
