@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, KeyboardAvoidingView } from 'react-native'
-import React, { useState } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
 import COLORS from '../consts/colors'
 import { StyleSheet } from 'react-native'
 import { Dimensions } from 'react-native'
@@ -7,9 +7,10 @@ import { IconButton } from 'react-native-paper'
 import { TextInput } from 'react-native'
 import {initializeApp} from 'firebase/app'
 import { firebaseConfig } from '../firebase'
-import {createUserWithEmailAndPassword, getAuth} from 'firebase/auth'
+import {createUserWithEmailAndPassword, getAuth, updateProfile} from 'firebase/auth'
 import { Alert } from 'react-native'
-import { useNavigation } from '@react-navigation/core'
+import firestore from '@react-native-firebase/firestore'
+
 
 const {width, height} = Dimensions.get('window')
 
@@ -18,18 +19,27 @@ const SignUpScreen = ({navigation}) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [username, setUsername] = useState('')
-  const [error, setError] = useState(null)
+
+  const [userData, setUserData] = useState(null)
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
   const handleSignUp = async () => {
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
 
     createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
+    .then(() => {
       console.log('Account created!')
-      const user = userCredential.user;
-      console.log(user)
+      // const user = userCredential.user;
+      // console.log(user)
+      firestore().collection('users').doc(auth.currentUser.uid)
+      .set({
+        displayName: auth,
+        email: email,
+        createAt: firestore.Timestamp.fromDate(new Date())
+      })
       navigation.navigate('HomeScreen')
+      console.log('User?: ', auth)
     })
     .catch(error => {
       console.log(error)
@@ -59,8 +69,8 @@ const SignUpScreen = ({navigation}) => {
               borderWidth: 1,
               backgroundColor: 'transparent',
             },
-            ]}>
-            {/* onPress={skip}> */}
+            ]}
+            onPress={() => navigation.navigate('SignInScreen')}>
                   <Text
                     style={{
                       fontWeight: 'bold',
@@ -89,7 +99,7 @@ const SignUpScreen = ({navigation}) => {
         </View>
         <View>
           <TextInput 
-          placeholder='username'
+          placeholder='Enter Username'
           style={styles.textInput}
           value={username}
           onChangeText={(username) => setUsername(username)}
@@ -108,7 +118,7 @@ const SignUpScreen = ({navigation}) => {
           blurOnSubmit={false}
           />
           <TextInput
-          placeholder='Password'
+          placeholder='Enter Password'
           style={styles.textInput}
           value={password}
           onChangeText={(password) => setPassword(password)}
@@ -117,7 +127,7 @@ const SignUpScreen = ({navigation}) => {
         </View>
         <View style={{height: 65, width: '90%', alignSelf: 'center', top: height * 0.25}}>
             <TouchableOpacity
-            style={styles.btn_SignUp}
+            style={[styles.btn_SignUp, styles.shadowBtn]}
             onPress={() => handleSignUp()}
             >
             <Text style={{fontWeight: 'bold', fontSize: 18, color: COLORS.white}}>
@@ -167,5 +177,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 25,
     fontSize: 18,
     marginTop: 15,
+  },
+  shadowBtn: {
+    shadowColor: COLORS.darkblue,
+    shadowOffset: {
+    width: 0,
+    height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
   },
 });

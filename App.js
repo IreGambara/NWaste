@@ -9,6 +9,8 @@ import HomeScreen from './screens/HomeScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'react-native';
 import { registerRootComponent } from 'expo';
+import SignInScreen from './screens/SignInScreen';
+import ResetPassword from './screens/ResetPassword';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +39,8 @@ const App = () => {
         )}
           <Stack.Screen name="LoginScreen" component={LoginScreen} />
           <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+          <Stack.Screen name='SignInScreen' component={SignInScreen} />
+          <Stack.Screen name='ResetPassword' component={ResetPassword} />
           <Stack.Screen name='HomeScreen' component={HomeScreen} />
         </Stack.Navigator>
       </NavigationContainer>

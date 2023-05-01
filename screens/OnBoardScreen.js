@@ -101,7 +101,7 @@ const Slide = ({item}) => {
             {currentSlideIndex == slides.length - 1 ? (
               <View style={{height: 55}}>
                 <TouchableOpacity
-                  style={styles.btn}
+                  style={[styles.btn, styles.shadowBtn]}
                   onPress={() => navigation.replace('LoginScreen')}>
                   <Text style={{fontWeight: 'bold', fontSize: 15, color: COLORS.white}}>
                     GET STARTED
@@ -119,7 +119,7 @@ const Slide = ({item}) => {
                       borderWidth: 1,
                       backgroundColor: 'transparent',
                     },
-                  ]}
+                   ]}
                   onPress={skip}>
                   <Text
                     style={{
@@ -134,7 +134,7 @@ const Slide = ({item}) => {
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={goToNextSlide}
-                  style={styles.btn}>
+                  style={[styles.btn, styles.shadowBtn]}>
                   <Text
                     style={{
                       fontWeight: 'bold',
@@ -205,6 +205,16 @@ const Slide = ({item}) => {
       backgroundColor: COLORS.lightgreen,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    shadowBtn: {
+      shadowColor: COLORS.darkblue,
+      shadowOffset: {
+      width: 0,
+      height: 1,
+      },
+      shadowOpacity: 0.22,
+      shadowRadius: 2.22,
+      elevation: 3,
     },
   });
 
