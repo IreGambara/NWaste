@@ -1,73 +1,79 @@
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { getAuth, signOut, updateCurrentUser } from 'firebase/auth';
 import { Alert } from 'react-native';
 import { SafeAreaView } from 'react-native';
 import COLORS from '../consts/colors';
 import { KeyboardAvoidingView } from 'react-native';
-import { initializeApp } from 'firebase/app';
-import { firebaseConfig } from '../firebase';
 import firestore from '@react-native-firebase/firestore'
+import { auth, db } from '../firebase';
+import { AuthContext } from '../consts/AuthContext';
+
 
 const {width, height} = Dimensions.get('window')
 
- const HomeScreen = ({navigation, route}) => {
+ function HomeScreen ({navigation}) {
 
-  const app = initializeApp(firebaseConfig);
-  const auth_ = getAuth(app);
+  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState('');
+  const [users, setUsers] = useState([])
 
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
-
-  function onAuthStateChanged(user) {
-    setUser(user);
-    if (initializing) setInitializing(false);
-  }
-
-  useEffect(() => {
-    const subscriber = auth_.onAuthStateChanged(onAuthStateChanged)
-    return subscriber
-  }, [])
-
-  if (initializing) return null
-
-  const logout = () => {
-    Alert.alert('Logout', 'Are you want to logout?', [
-      {
-        text: 'Cancel',
-        onPress: () => {return null},
-      },
-      {
-        text: 'Confirm',
-        onPress: () => {
-          signOut()
-          .then(() => navigation.replace('Auth'))
-          .catch((error) => {
-            if(error.code === 'auth/no-current-user')
-              navigation.replace('Auth')
-            else alert(error)
-          })
-        }
-      }
-    ], {cancelable: false})
-  }
-
+  const context = useContext(AuthContext)
+    const getUsers = async () => {
+        const user = auth.currentUser.uid
+        console.log('$$$', user)
+        firestore()
+        .collection('users')
+        .where('uid', '==', user)
+        .get()
+        .then((querySnaphot) => {
+            querySnaphot.forEach((documentSnapshot) => {
+                context.setUsername(documentSnapshot.data().username)
+                context.setEmail(documentSnapshot.data().email)
+                context.setPassword(documentSnapshot.data().password)
+            })
+        })
+    }
+    useEffect(() => {
+        getUsers()
+    }, [])
+  // const logout = () => {
+  //   Alert.alert('Logout', 'Are you want to logout?', [
+  //     {
+  //       text: 'Cancel',
+  //       onPress: () => {return null},
+  //     },
+  //     {
+  //       text: 'Confirm',
+  //       onPress: () => {
+  //         signOut()
+  //         .then(() => navigation.replace('Auth'))
+  //         .catch((error) => {
+  //           if(error.code === 'auth/no-current-user')
+  //             navigation.replace('Auth')
+  //           else alert(error)
+  //         })
+  //       }
+  //     }
+  //   ], {cancelable: false})
+  // }
+   
   return (
-<SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
-  <ScrollView keyboardShouldPersistTaps="handled"
-  contentContainerStyle={{
-  flex: 1,
-  justifyContent: "center",
-  alignContent: "center",
-  }}>
-    <KeyboardAvoidingView enabled>
-      <View>
-        <Text>Hello, {user.uid}</Text>
-      </View>
-    </KeyboardAvoidingView>
-  </ScrollView>
-</SafeAreaView>
-  )
+    <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
+      <ScrollView keyboardShouldPersistTaps="handled"
+      contentContainerStyle={{
+      flex: 1,
+      justifyContent: "center",
+      alignContent: "center",
+      }}>
+        <KeyboardAvoidingView enabled>
+        <View>
+          <Text >Hello, {context.email}</Text>
+        </View> 
+        </KeyboardAvoidingView>
+      </ScrollView>
+    </SafeAreaView>
+      )
 }
 
 export default HomeScreen;

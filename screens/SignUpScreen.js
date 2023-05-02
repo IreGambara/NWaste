@@ -1,51 +1,81 @@
 import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, KeyboardAvoidingView } from 'react-native'
-import React, { createContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import COLORS from '../consts/colors'
 import { StyleSheet } from 'react-native'
 import { Dimensions } from 'react-native'
 import { IconButton } from 'react-native-paper'
 import { TextInput } from 'react-native'
-import {initializeApp} from 'firebase/app'
-import { firebaseConfig } from '../firebase'
-import {createUserWithEmailAndPassword, getAuth, updateProfile} from 'firebase/auth'
+import { auth, db } from '../firebase'
 import { Alert } from 'react-native'
+import { addDoc, collection } from 'firebase/firestore'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
 import firestore from '@react-native-firebase/firestore'
-
+import { AuthContext, UseAuthContext } from '../consts/AuthContext'
 
 const {width, height} = Dimensions.get('window')
 
 const SignUpScreen = ({navigation}) => {
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [username, setUsername] = useState('')
+  const [isSignedIn, setIsSignedIn] = useState("false");
 
-  const [userData, setUserData] = useState(null)
+  //const context = useContext(AuthContext)
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+  const [data, setData] = UseAuthContext()
 
-  const handleSignUp = async () => {
+   //const [email, setEmail] = useState('')
+   //const [password, setPassword] = useState('')
+   //const [username, setUsername] = useState('')
 
-    createUserWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      console.log('Account created!')
-      // const user = userCredential.user;
-      // console.log(user)
-      firestore().collection('users').doc(auth.currentUser.uid)
-      .set({
-        displayName: auth,
-        email: email,
-        createAt: firestore.Timestamp.fromDate(new Date())
+
+    // const handleSignUp = () => {
+    //   createUserWithEmailAndPassword(context.username, context.email, context.password)
+    //   .then(async (res) => {
+    //     firestore()
+    //     .collection('users')
+    //     .add({
+    //       uid: res.user.uid,
+    //       username: context.username,
+    //       email: context.email,
+    //       password: context.password,
+    //     })
+    //     .then(() => {
+    //       console.log('User Added!')
+    //     })
+    //     .catch((err) => {
+    //       console.log(err)
+    //       Alert.alert(err.message)
+    //     })
+    //     console.log(res)
+    //     setIsSignedIn(true)
+    //     navigation.navigate('HomeScreen')
+    //   })
+    //   .catch((res) => {
+    //     alert(res)
+    //   })
+    // }
+
+  const handleSignUp = () => {
+    createUserWithEmailAndPassword(context.username, context.email, context.password)
+    .then(async (userCredentials) => { // make function async
+        try {
+          const docRef = await addDoc(collection(db, "users"), { // here you need to use await
+            uid: userCredentials.user.uid,
+            username: context.username,
+            email: context.email,
+            password: context.password,
+          });
+          console.log("Success writing document!");
+          navigation.navigate('HomeScreen')
+        } catch (e) {
+          console.error("Error adding document: ", e);
+        }
       })
-      navigation.navigate('HomeScreen')
-      console.log('User?: ', auth)
-    })
-    .catch(error => {
-      console.log(error)
-      Alert.alert(error.message)
-    })
-  };
+      .catch((error) => {
+        alert(error.message)
+        console.log(error)
+        console.error(error);
+      });
+    } 
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
@@ -101,27 +131,27 @@ const SignUpScreen = ({navigation}) => {
           <TextInput 
           placeholder='Enter Username'
           style={styles.textInput}
-          value={username}
-          onChangeText={(username) => setUsername(username)}
+          value={context.username}
+          onChangeText={(username) => {context.setUsername(username)}}
           autoCapitalize='sentences'
           returnKeyType='next'
           blurOnSubmit={false}
           />
           <TextInput
           style={styles.textInput}
-          onChangeText={(email) => setEmail(email)}
+          value={context.email}
+          onChangeText={(email) => {context.setEmail(email)}}
           placeholder="Enter Email"
           autoCapitalize="none"
           keyboardType="email-address"
           returnKeyType="next"
-          value={email}
           blurOnSubmit={false}
           />
           <TextInput
           placeholder='Enter Password'
           style={styles.textInput}
-          value={password}
-          onChangeText={(password) => setPassword(password)}
+          value={context.password}
+          onChangeText={(password) => {context.setPassword(password)}}
           secureTextEntry
           />
         </View>

@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import LoginScreen from './screens/LoginScreen';
@@ -11,10 +11,12 @@ import { StatusBar } from 'react-native';
 import { registerRootComponent } from 'expo';
 import SignInScreen from './screens/SignInScreen';
 import ResetPassword from './screens/ResetPassword';
+import { AuthContext, AuthContextInit } from './consts/AuthContext';
 
 const Stack = createStackNavigator();
 
 const App = () => {
+  
   const [firstLaunch, setFirstLaunch] = React.useState(null);
   React.useEffect(() => {
     async function setData() {
@@ -30,9 +32,9 @@ const App = () => {
   }, []);
 
   return (
-    firstLaunch != null && (
+    <AuthContextInit>
+    {firstLaunch != null && (
       <NavigationContainer>
-        <StatusBar />
         <Stack.Navigator screenOptions={{headerShown: false}}>
         {firstLaunch && (
           <Stack.Screen name="OnboardScreen" component={OnBoardScreen}/>
@@ -42,10 +44,12 @@ const App = () => {
           <Stack.Screen name='SignInScreen' component={SignInScreen} />
           <Stack.Screen name='ResetPassword' component={ResetPassword} />
           <Stack.Screen name='HomeScreen' component={HomeScreen} />
+
         </Stack.Navigator>
       </NavigationContainer>
-    )
-  );
+    )}
+</AuthContextInit> 
+);
 };
 
 registerRootComponent(App)
