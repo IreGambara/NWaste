@@ -5,7 +5,6 @@ import {createStackNavigator} from '@react-navigation/stack';
 import LoginScreen from './screens/LoginScreen';
 import OnBoardScreen from './screens/OnBoardScreen';
 import SignUpScreen from './screens/SignUpScreen';
-import HomeScreen from './screens/HomeScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'react-native';
 import { registerRootComponent } from 'expo';
@@ -13,6 +12,7 @@ import SignInScreen from './screens/SignInScreen';
 import ResetPassword from './screens/ResetPassword';
 import Firebase, { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import BottomNavigator from './consts/BottomNavigator';
 
 const Stack = createStackNavigator();
 
@@ -49,15 +49,15 @@ const App = () => {
         {firstLaunch && (
           <Stack.Screen name="OnboardScreen" component={OnBoardScreen}/>
         )}
-{/* {loggedIn ? null : (
+{loggedIn ? null : (
   <Stack.Group>
     <Stack.Screen name="LoginScreen" component={LoginScreen} />
     <Stack.Screen name='SignInScreen' component={SignInScreen} />
+     <Stack.Screen name='ResetPassword' component={ResetPassword} />
     <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
   </Stack.Group>
-)} */}
-      <Stack.Screen name='HomeScreen' component={HomeScreen} />
-      <Stack.Screen name='ResetPassword' component={ResetPassword} />
+)}
+      <Stack.Screen name='HomeScreen' component={BottomNavigator} />
     </Stack.Navigator>
   </NavigationContainer>
     )

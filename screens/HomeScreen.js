@@ -17,21 +17,21 @@ const {width, height} = Dimensions.get('window')
   //const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState('')
 
-  // const fetchUserName = async () => {
-  //   try {
-  //     const q = query(collection(db, 'users'), where('uid', '==', auth?.currentUser.uid))
-  //     const doc = await getDocs(q)
-  //     const data = doc.docs[0].data();
-  //     setUsername(data.username)
-  //   } catch (err) {
-  //     console.error(err);
-  //     alert("An error occured while fetching user data");
-  //   }
-  // }
+  const fetchUserName = async () => {
+    try {
+      const q = query(collection(db, 'users'), where('uid', '==', auth?.currentUser.uid))
+      const doc = await getDocs(q)
+      const data = doc.docs[0].data();
+      setUsername(data.username)
+    } catch (err) {
+      console.error(err);
+      alert("An error occured while fetching user data");
+    }
+  }
 
-  // useEffect(() => {
-  //   fetchUserName()
-  // }, [])
+  useEffect(() => {
+    fetchUserName()
+  }, [])
 
 
   return (
