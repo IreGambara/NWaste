@@ -1,76 +1,63 @@
-import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, ScrollView, StatusBar } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
-import { getAuth, signOut, updateCurrentUser } from 'firebase/auth';
-import { Alert } from 'react-native';
+import { getAuth, onAuthStateChanged, signOut, updateCurrentUser } from 'firebase/auth';
 import { SafeAreaView } from 'react-native';
 import COLORS from '../consts/colors';
 import { KeyboardAvoidingView } from 'react-native';
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import firestore from '@react-native-firebase/firestore'
 import { auth, db } from '../firebase';
-import { AuthContext } from '../consts/AuthContext';
+import { Searchbar } from 'react-native-paper';
 
 
 const {width, height} = Dimensions.get('window')
 
- function HomeScreen ({navigation}) {
+ const HomeScreen = ({navigation}) => {
 
-  const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState('');
-  const [users, setUsers] = useState([])
+  //const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState('')
 
-  const context = useContext(AuthContext)
-    const getUsers = async () => {
-        const user = auth.currentUser.uid
-        console.log('$$$', user)
-        firestore()
-        .collection('users')
-        .where('uid', '==', user)
-        .get()
-        .then((querySnaphot) => {
-            querySnaphot.forEach((documentSnapshot) => {
-                context.setUsername(documentSnapshot.data().username)
-                context.setEmail(documentSnapshot.data().email)
-                context.setPassword(documentSnapshot.data().password)
-            })
-        })
-    }
-    useEffect(() => {
-        getUsers()
-    }, [])
-  // const logout = () => {
-  //   Alert.alert('Logout', 'Are you want to logout?', [
-  //     {
-  //       text: 'Cancel',
-  //       onPress: () => {return null},
-  //     },
-  //     {
-  //       text: 'Confirm',
-  //       onPress: () => {
-  //         signOut()
-  //         .then(() => navigation.replace('Auth'))
-  //         .catch((error) => {
-  //           if(error.code === 'auth/no-current-user')
-  //             navigation.replace('Auth')
-  //           else alert(error)
-  //         })
-  //       }
-  //     }
-  //   ], {cancelable: false})
+  // const fetchUserName = async () => {
+  //   try {
+  //     const q = query(collection(db, 'users'), where('uid', '==', auth?.currentUser.uid))
+  //     const doc = await getDocs(q)
+  //     const data = doc.docs[0].data();
+  //     setUsername(data.username)
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert("An error occured while fetching user data");
+  //   }
   // }
-   
+
+  // useEffect(() => {
+  //   fetchUserName()
+  // }, [])
+
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
+      <StatusBar backgroundColor={COLORS.white} />
       <ScrollView keyboardShouldPersistTaps="handled"
       contentContainerStyle={{
       flex: 1,
       justifyContent: "center",
       alignContent: "center",
       }}>
-        <KeyboardAvoidingView enabled>
-        <View>
-          <Text >Hello, {context.email}</Text>
+        <View style={{height, width, marginHorizontal: 15}}>
+          <View style={{height: height * 0.25}}>
+            <Text style={styles.title} >Hello, {username}</Text>
+            <Text style={styles.subtitle}>What would do you like to cook today?</Text>
+            <View style={{marginTop: 15}}>
+            <Searchbar
+              placeholder='Enter the ingredient'
+              style={{width: '93%'}}
+              theme={{ roundness: 3 }}
+              //icon={{source: 'tune-vertical', direction: 'ltr'}}
+             />
+          </View>
+          </View>
+
         </View> 
-        </KeyboardAvoidingView>
       </ScrollView>
     </SafeAreaView>
       )
@@ -97,10 +84,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    color: COLORS.darkblue,
-    fontSize: 40,
-    fontWeight: 'bold',
+    color: COLORS.lightgreen,
+    fontSize: 35,
+    fontWeight: '800',
     textAlign: 'left',
+  },
+  subtitle: {
+    color: COLORS.darkblue,
+    fontSize: 15,
+    marginTop: 10,
+    //maxWidth: '65%',
+    textAlign: 'left',
+    letterSpacing: 0.5,
+    //alignSelf: 'center',
+    //lineHeight: 23,
   },
   textInput: {
     top: height * 0.18,

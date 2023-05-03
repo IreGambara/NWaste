@@ -5,7 +5,7 @@ import { Dimensions } from 'react-native'
 import { IconButton } from 'react-native-paper'
 import { initializeApp } from 'firebase/app'
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth'
-import { firebaseConfig } from '../firebase'
+import { firebaseConfig, sendPasswordReset } from '../firebase'
 import { Alert } from 'react-native'
 import { ActivityIndicator } from 'react-native'
 
@@ -66,7 +66,7 @@ const ResetPassword = ({navigation}) => {
           <View style={{height: 65, marginBottom: 20}}>
               <TouchableOpacity
               style={[styles.btn_SignIn, styles.shadowBtn]}
-              onPress={() => reset()}
+              onPress={() => sendPasswordReset(email)}
               >
               <Text style={{fontWeight: 'bold', fontSize: 18, color: COLORS.white}}>
                   SUBMIT

@@ -174,7 +174,7 @@ const Slide = ({item}) => {
       color: COLORS.darkblue,
       fontSize: 13,
       marginTop: 10,
-      maxWidth: '65%',
+      maxWidth: '70%',
       textAlign: 'center',
       alignSelf: 'center',
       //lineHeight: 23,

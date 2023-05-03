@@ -5,77 +5,32 @@ import { StyleSheet } from 'react-native'
 import { Dimensions } from 'react-native'
 import { IconButton } from 'react-native-paper'
 import { TextInput } from 'react-native'
-import { auth, db } from '../firebase'
+import { auth, db, registerWithEmailAndPassword } from '../firebase'
 import { Alert } from 'react-native'
-import { addDoc, collection } from 'firebase/firestore'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { addDoc, collection, setDoc } from 'firebase/firestore'
+import { createUserWithEmailAndPassword, updateCurrentUser, updateProfile } from 'firebase/auth'
 import firestore from '@react-native-firebase/firestore'
-import { AuthContext, UseAuthContext } from '../consts/AuthContext'
+import firebase from '@firebase/app-compat'
+
 
 const {width, height} = Dimensions.get('window')
 
 const SignUpScreen = ({navigation}) => {
 
-  const [isSignedIn, setIsSignedIn] = useState("false");
-
-  //const context = useContext(AuthContext)
-
-  const [data, setData] = UseAuthContext()
-
-   //const [email, setEmail] = useState('')
-   //const [password, setPassword] = useState('')
-   //const [username, setUsername] = useState('')
+   const [email, setEmail] = useState('')
+   const [password, setPassword] = useState('')
+   const [username, setUsername] = useState('')
 
 
-    // const handleSignUp = () => {
-    //   createUserWithEmailAndPassword(context.username, context.email, context.password)
-    //   .then(async (res) => {
-    //     firestore()
-    //     .collection('users')
-    //     .add({
-    //       uid: res.user.uid,
-    //       username: context.username,
-    //       email: context.email,
-    //       password: context.password,
-    //     })
-    //     .then(() => {
-    //       console.log('User Added!')
-    //     })
-    //     .catch((err) => {
-    //       console.log(err)
-    //       Alert.alert(err.message)
-    //     })
-    //     console.log(res)
-    //     setIsSignedIn(true)
-    //     navigation.navigate('HomeScreen')
-    //   })
-    //   .catch((res) => {
-    //     alert(res)
-    //   })
-    // }
-
-  const handleSignUp = () => {
-    createUserWithEmailAndPassword(context.username, context.email, context.password)
-    .then(async (userCredentials) => { // make function async
-        try {
-          const docRef = await addDoc(collection(db, "users"), { // here you need to use await
-            uid: userCredentials.user.uid,
-            username: context.username,
-            email: context.email,
-            password: context.password,
-          });
-          console.log("Success writing document!");
-          navigation.navigate('HomeScreen')
-        } catch (e) {
-          console.error("Error adding document: ", e);
-        }
-      })
-      .catch((error) => {
-        alert(error.message)
-        console.log(error)
-        console.error(error);
-      });
+  const handleSubmit = () => {
+    if(username === '' || email === '' || password === '') {
+      Alert.alert('Inserisci tutti i campi')
+    }
+      registerWithEmailAndPassword(username, email, password)
+      navigation.navigate('HomeScreen')
     } 
+  
+  
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
@@ -131,16 +86,16 @@ const SignUpScreen = ({navigation}) => {
           <TextInput 
           placeholder='Enter Username'
           style={styles.textInput}
-          value={context.username}
-          onChangeText={(username) => {context.setUsername(username)}}
+          value={username}
+          onChangeText={(username) => setUsername(username)}
           autoCapitalize='sentences'
           returnKeyType='next'
           blurOnSubmit={false}
           />
           <TextInput
           style={styles.textInput}
-          value={context.email}
-          onChangeText={(email) => {context.setEmail(email)}}
+          value={email}
+          onChangeText={(email) => setEmail(email)}
           placeholder="Enter Email"
           autoCapitalize="none"
           keyboardType="email-address"
@@ -150,15 +105,15 @@ const SignUpScreen = ({navigation}) => {
           <TextInput
           placeholder='Enter Password'
           style={styles.textInput}
-          value={context.password}
-          onChangeText={(password) => {context.setPassword(password)}}
+          value={password}
+          onChangeText={(password) => setPassword(password)}
           secureTextEntry
           />
         </View>
         <View style={{height: 65, width: '90%', alignSelf: 'center', top: height * 0.25}}>
             <TouchableOpacity
             style={[styles.btn_SignUp, styles.shadowBtn]}
-            onPress={() => handleSignUp()}
+            onPress={() => handleSubmit()}
             >
             <Text style={{fontWeight: 'bold', fontSize: 18, color: COLORS.white}}>
                 SIGN UP

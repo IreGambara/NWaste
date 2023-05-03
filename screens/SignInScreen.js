@@ -6,49 +6,23 @@ import { IconButton } from 'react-native-paper'
 import { initializeApp } from 'firebase/app'
 import { sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth'
 import { Alert } from 'react-native'
-import { AuthContext } from '../consts/AuthContext'
+import { auth, logInWithEmailAndPassword } from '../firebase'
 
 
 const {width, height} = Dimensions.get('window')
 
 const SignInScreen = ({navigation}) => {
 
-    //const [email, setEmail] = useState('')
-    //const [password, setPassword] = useState('')
-
-    const [isSignedIn, setIsSignedIn] = useState('false')
-
-    const context = useContext(AuthContext)
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
 
     const handleSignIn = () => {
-      signInWithEmailAndPassword(context.username, context.email, context.password)
-      .then((res) => {
-        console.log(res)
-        setIsSignedIn(true)
-        console.log('Signed In!')
-        navigation.navigate('HomeScreen')
-      })
-      .catch((err) => {
-        Alert.alert(err.message)
-      })
+      if(email === '' || password === '') {
+        Alert.alert('Inserisci i campi')
+      }
+      logInWithEmailAndPassword(email, password)
+      navigation.navigate('HomeScreen')
     }
-
-    // const handleSignIn = () => {
-    // const app = initializeApp(firebaseConfig);
-    // const auth = getAuth(app);
-
-    // signInWithEmailAndPassword(auth, email, password)
-    // .then((userCredential) => {
-    //     console.log('Signed In!')
-    //     const user = userCredential.user
-    //     console.log(user)
-    //     navigation.navigate('HomeScreen')
-    // })
-    // .catch(error => {
-    //   console.log(error)
-    //   Alert.alert(error.message)
-    // })
-    // }
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
@@ -103,8 +77,8 @@ const SignInScreen = ({navigation}) => {
         <View style={{top: height * 0.18, marginHorizontal: 25}}>
           <TextInput
           style={styles.textInput}
-          value={context.email}
-          onChangeText={(email) => {context.setEmail(email)}}
+          value={email}
+          onChangeText={(email) => {setEmail(email)}}
           placeholder="Enter Email"
           autoCapitalize="none"
           keyboardType="email-address"
@@ -114,8 +88,8 @@ const SignInScreen = ({navigation}) => {
           <TextInput
           placeholder='Enter Password'
           style={styles.textInput}
-          value={context.password}
-          onChangeText={(password) => {context.setPassword(password)}}
+          value={password}
+          onChangeText={(password) => {setPassword(password)}}
           secureTextEntry
           />
           <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
@@ -125,7 +99,7 @@ const SignInScreen = ({navigation}) => {
         <View style={{height: 65, width: '90%', alignSelf: 'center', top: height * 0.25}}>
             <TouchableOpacity
             style={[styles.btn_SignIn, styles.shadowBtn]}
-            onPress={handleSignIn}
+            onPress={() => handleSignIn()}
             >
             <Text style={{fontWeight: 'bold', fontSize: 18, color: COLORS.white}}>
                 SIGN IN

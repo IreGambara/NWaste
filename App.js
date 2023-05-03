@@ -11,11 +11,22 @@ import { StatusBar } from 'react-native';
 import { registerRootComponent } from 'expo';
 import SignInScreen from './screens/SignInScreen';
 import ResetPassword from './screens/ResetPassword';
-import { AuthContext, AuthContextInit } from './consts/AuthContext';
+import Firebase, { auth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const Stack = createStackNavigator();
 
 const App = () => {
+
+  const [loggedIn, setLoggedIn] = useState(false)
+
+  onAuthStateChanged(auth, (user) => {
+    if(user) {
+      setLoggedIn(true)
+    } else {
+      setLoggedIn(false)
+    }
+  })
   
   const [firstLaunch, setFirstLaunch] = React.useState(null);
   React.useEffect(() => {
@@ -32,23 +43,24 @@ const App = () => {
   }, []);
 
   return (
-    <AuthContextInit>
-    {firstLaunch != null && (
+    firstLaunch != null && (
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
         {firstLaunch && (
           <Stack.Screen name="OnboardScreen" component={OnBoardScreen}/>
         )}
-          <Stack.Screen name="LoginScreen" component={LoginScreen} />
-          <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
-          <Stack.Screen name='SignInScreen' component={SignInScreen} />
-          <Stack.Screen name='ResetPassword' component={ResetPassword} />
-          <Stack.Screen name='HomeScreen' component={HomeScreen} />
-
-        </Stack.Navigator>
-      </NavigationContainer>
-    )}
-</AuthContextInit> 
+{/* {loggedIn ? null : (
+  <Stack.Group>
+    <Stack.Screen name="LoginScreen" component={LoginScreen} />
+    <Stack.Screen name='SignInScreen' component={SignInScreen} />
+    <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+  </Stack.Group>
+)} */}
+      <Stack.Screen name='HomeScreen' component={HomeScreen} />
+      <Stack.Screen name='ResetPassword' component={ResetPassword} />
+    </Stack.Navigator>
+  </NavigationContainer>
+    )
 );
 };
 
