@@ -49,15 +49,15 @@ const App = () => {
         {firstLaunch && (
           <Stack.Screen name="OnboardScreen" component={OnBoardScreen}/>
         )}
-{loggedIn ? null : (
+{/* {loggedIn ? null : (
   <Stack.Group>
     <Stack.Screen name="LoginScreen" component={LoginScreen} />
     <Stack.Screen name='SignInScreen' component={SignInScreen} />
      <Stack.Screen name='ResetPassword' component={ResetPassword} />
     <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
   </Stack.Group>
-)}
-      <Stack.Screen name='HomeScreen' component={BottomNavigator} />
+)} */}
+      <Stack.Screen name='BottomNavigator' component={BottomNavigator} />
     </Stack.Navigator>
   </NavigationContainer>
     )

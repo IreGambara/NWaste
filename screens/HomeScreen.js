@@ -7,7 +7,8 @@ import { KeyboardAvoidingView } from 'react-native';
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import firestore from '@react-native-firebase/firestore'
 import { auth, db } from '../firebase';
-import { Searchbar } from 'react-native-paper';
+import {  IconButton, Searchbar } from 'react-native-paper';
+import { Icon } from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 const {width, height} = Dimensions.get('window')
@@ -17,21 +18,21 @@ const {width, height} = Dimensions.get('window')
   //const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState('')
 
-  const fetchUserName = async () => {
-    try {
-      const q = query(collection(db, 'users'), where('uid', '==', auth?.currentUser.uid))
-      const doc = await getDocs(q)
-      const data = doc.docs[0].data();
-      setUsername(data.username)
-    } catch (err) {
-      console.error(err);
-      alert("An error occured while fetching user data");
-    }
-  }
+  // const fetchUserName = async () => {
+  //   try {
+  //     const q = query(collection(db, 'users'), where('uid', '==', auth.currentUser.uid))
+  //     const doc = await getDocs(q)
+  //     const data = doc.docs[0].data();
+  //     setUsername(data.username)
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert("An error occured while fetching user data");
+  //   }
+  // }
 
-  useEffect(() => {
-    fetchUserName()
-  }, [])
+  // useEffect(() => {
+  //   fetchUserName()
+  // }, [])
 
 
   return (
@@ -47,13 +48,18 @@ const {width, height} = Dimensions.get('window')
           <View style={{height: height * 0.25}}>
             <Text style={styles.title} >Hello, {username}</Text>
             <Text style={styles.subtitle}>What would do you like to cook today?</Text>
-            <View style={{marginTop: 15}}>
+            <View style={{marginTop: 15, flexDirection: 'row'}}>
             <Searchbar
               placeholder='Enter the ingredient'
-              style={{width: '93%'}}
-              theme={{ roundness: 3 }}
+              style={{width: '78%'}}
+              theme={{ roundness: 2 }}
+              iconColor={COLORS.darkblue}
+              placeholderTextColor='grey'
               //icon={{source: 'tune-vertical', direction: 'ltr'}}
              />
+             <View style={styles.sortBtn}>
+                <IconButton icon='tune' size={30} iconColor={COLORS.white}/>
+             </View>   
           </View>
           </View>
 
@@ -93,11 +99,8 @@ const styles = StyleSheet.create({
     color: COLORS.darkblue,
     fontSize: 15,
     marginTop: 10,
-    //maxWidth: '65%',
     textAlign: 'left',
     letterSpacing: 0.5,
-    //alignSelf: 'center',
-    //lineHeight: 23,
   },
   textInput: {
     top: height * 0.18,
@@ -119,4 +122,14 @@ const styles = StyleSheet.create({
     shadowRadius: 2.22,
     elevation: 3,
   },
+  sortBtn: {
+    width: 50,
+    height: 50,
+    backgroundColor: COLORS.lightgreen,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+    marginTop: 4,
+  }
 });
