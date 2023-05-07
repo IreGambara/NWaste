@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Dimensions, ScrollView, StatusBar } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, ScrollView, StatusBar, TouchableOpacity, Image } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import { getAuth, onAuthStateChanged, signOut, updateCurrentUser } from 'firebase/auth';
 import { SafeAreaView } from 'react-native';
@@ -7,11 +7,64 @@ import { KeyboardAvoidingView } from 'react-native';
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import firestore from '@react-native-firebase/firestore'
 import { auth, db } from '../firebase';
-import {  IconButton, Searchbar } from 'react-native-paper';
+import {  Card, IconButton, Searchbar } from 'react-native-paper';
 import { Icon } from 'react-native-vector-icons/MaterialCommunityIcons';
+//import cheerio from 'cheerio-without-node-native/lib/cheerio';
+import Carousel from 'react-native-snap-carousel';
 
 
 const {width, height} = Dimensions.get('window')
+
+function Popular() {
+
+  const [popular, setPopular] = useState([])
+  const [imageUrl, setImageUrl] = useState("")
+
+  const getPopular = async () => {
+
+    //var popular = '595b3070ad544bd6b4c28e3f0cf8e2f0'
+    const api = await fetch(`https://api.spoonacular.com/recipes/random?apiKey=595b3070ad544bd6b4c28e3f0cf8e2f0&number=9`)
+    const data = await api.json()
+    setPopular(data.recipes)
+    
+    //console.log(data)
+    console.log(data.recipes)
+    console.log(data.recipes.image)
+
+  }
+
+  useEffect(() => {
+    getPopular()
+  }, [])
+
+  return (
+    <View>
+    {popular.map((recipe) => {
+      return (
+          <View style={styles.wrapper}>
+            <Text style={styles.titleSection}>Trending</Text>
+          {popular.map((recipe) => {
+            return (
+           // <ScrollView style={styles.wrapper} horizontal pagingEnabled showsHorizontalScrollIndicator={false} >
+            <Card>
+              <View key={recipe.id}>
+              {/* <Image source={imageUrl} /> */}
+              <Card.Cover source={recipe.image} />
+              <Card.Title title={recipe.title} />
+              </View>
+            </Card>
+          //  </ScrollView>
+
+            )
+          })}
+          </View>
+       // <Carousel ref={(c) => {car}} />
+      )
+    })}
+    </View>
+  )
+}
+
 
  const HomeScreen = ({navigation}) => {
 
@@ -33,7 +86,6 @@ const {width, height} = Dimensions.get('window')
   // useEffect(() => {
   //   fetchUserName()
   // }, [])
-
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
@@ -62,38 +114,33 @@ const {width, height} = Dimensions.get('window')
              </View>   
           </View>
           </View>
+          {/* Trending */}
+            <Popular />
 
         </View> 
       </ScrollView>
     </SafeAreaView>
-      )
+  )
 }
 
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-  btn_SignUp: {
-    flex: 1,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: COLORS.lightgreen,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  btn: {
-    top: height * 0.03,
-    width: 120,
-    height: 40,
-    borderRadius: 30,
-    backgroundColor: COLORS.darkblue,
-    justifyContent: 'center',
-    alignItems: 'center',
+  wrapper: {
+    marginHorizontal: 4,
+    marginVertical: 0,
   },
   title: {
     color: COLORS.lightgreen,
     fontSize: 35,
     fontWeight: '800',
     textAlign: 'left',
+  },
+  titleSection: {
+    color: COLORS.darkblue,
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 15,
   },
   subtitle: {
     color: COLORS.darkblue,

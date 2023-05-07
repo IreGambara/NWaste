@@ -32,7 +32,7 @@ const BottomNavigator = () => {
       tabBarShowLabel: false,
         tabBarStyle: {
           position: 'absolute',
-          bottom: 35,
+          bottom: 15,
           marginHorizontal: 25,
           elevation: 3,
           backgroundColor: COLORS.white,
@@ -99,7 +99,7 @@ const BottomNavigator = () => {
     height: 4,
     backgroundColor: COLORS.lightgreen,
     position: 'absolute',
-    bottom: 90,
+    bottom: 70,
     left: 70,
     borderRadius: 40,
     transform: [
